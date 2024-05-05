@@ -68,7 +68,7 @@ const handleSignout = async () => {
 
 return (
   <Box display="flex" justifyContent="space-between" alignItems="center" p={0} boxShadow={1} width="100%">
-    <Typography variant={isMediumScreen ? "h6" : "h4"} sx={{marginLeft: 1}}>Movie<br />Recommender</Typography>
+    <Typography className="heading" variant={isMediumScreen ? "h5" : "h4"} sx={{marginLeft: 1}}>Movie<br />Recommender</Typography>
     {isSmallScreen ? (
       <>
         <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleMenuOpen}>
@@ -80,22 +80,22 @@ return (
           onClose={handleMenuClose}
         >
           <MenuItem onClick={handleMenuClose}>
-            <StyledLink to="/Recommendation">Recommendation</StyledLink>
+            <StyledLink className='menuitem' to="/Recommendation">Recommendation</StyledLink>
           </MenuItem>
           <MenuItem onClick={handleMenuClose}>
-            <StyledLink to="/Recommender">Home</StyledLink>
+            <StyledLink className='menuitem' to="/Recommender">Home</StyledLink>
           </MenuItem>
           <MenuItem onClick={handleSignout}>
-            {loading ? <CircularProgress size={24} /> : 'Signout'}
+            {loading ? <CircularProgress size={24} className='menuitem' /> : 'Signout'}
           </MenuItem>
         </Menu>
       </>
     ) : (
       <Box display="flex" justifyContent="center" flex="1">
         <Breadcrumbs>
-          <StyledLink to="/Recommendation">Recommendation</StyledLink>
-          <StyledLink to="/Recommender">Home</StyledLink>
-          <Typography color="textPrimary" onClick={handleSignout} sx={{cursor: 'pointer'}}>{loading ? <CircularProgress size={24} /> : 'Signout'}</Typography>
+          <StyledLink className='menuitem' to="/Recommendation">Recommendation</StyledLink>
+          <StyledLink className='menuitem' to="/Recommender">Home</StyledLink>
+          <Typography className='menuitem' color="textPrimary" onClick={handleSignout} sx={{cursor: 'pointer'}}>{loading ? <CircularProgress size={24} /> : 'Signout'}</Typography>
         </Breadcrumbs>
       </Box>
     )}
