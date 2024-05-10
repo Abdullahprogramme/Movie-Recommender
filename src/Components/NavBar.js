@@ -13,11 +13,20 @@ const actions = [
 ];
   
 export default function NavBar() {
+
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+
     return (
         <SpeedDial
             ariaLabel="SpeedDial"
             sx={{ position: 'absolute', bottom: 16, right: 16 }}
             icon={<SpeedDialIcon />}
+            onClose={handleClose}
+            onOpen={handleOpen}
+            open={open}
+
         >
         {actions.map((action) => (
             <SpeedDialAction
@@ -25,6 +34,7 @@ export default function NavBar() {
             icon={action.icon}
             tooltipTitle={action.name}
             onClick={(event) => {
+                handleClose();
                 event.preventDefault();
                 window.open(action.href, '_blank', 'noopener,noreferrer');
             }}
