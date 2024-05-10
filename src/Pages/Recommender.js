@@ -8,6 +8,7 @@ import InfoIcon from '@mui/icons-material/Info';
 
 import axios from 'axios';
 import MovieCard from '../Components/MovieCard';
+import Filter from '../Components/Filter';
 
 export default function Recommender() {
     const theme = useTheme();
@@ -84,53 +85,29 @@ export default function Recommender() {
       };
     
     useEffect(() => {
+        let isMounted = true;
         const fetchAllMovies = async () => {
             let allMovies = [];
-            for (let i = 1; i <= 40; i++) {  // Fetch the first 5 pages of movies
+            for (let i = 1; i <= 40; i++) {  
               const movies = await fetchMovies(i);
               allMovies = allMovies.concat(movies);
             }
-            setMovies(allMovies);
+            if (isMounted) {
+                setMovies(allMovies);
+            }
           };
         
           fetchAllMovies();
+          return () => {
+            // When the component is unmounted, set isMounted to false
+            isMounted = false;
+          };
     }, []);
 
 
-    // Filter the movies based on the user's answers when the answers change
-    // useEffect(() => {
-    //     const filteredMovies = movies.filter(movie => {
-    //     // Filter by genre
-    //     if (answers.genre && !movie.genre_ids.includes(genreToId(answers.genre))) {
-    //         return false;
-    //       }
-    
-    //     // Filter by period
-    //     if (answers.period) {
-    //         const year = parseInt(movie.release_date.substring(0, 4));
-    //         if ((answers.period === 'Before 2000' && year >= 2000) ||
-    //             (answers.period === '2000-2010' && (year < 2000 || year > 2010)) ||
-    //             (answers.period === 'After 2010' && year <= 2010)) {
-    //         return false;
-    //         }
-    //     }
-    
-    //     // Filter by TMDB rating
-    //     if (answers.highRating === 'Yes' && movie.vote_average < 7) {
-    //         return false;
-    //     }
-    
-    //     // Filter by critical acclaim
-    //     if (answers.criticalAcclaim === 'Yes' && movie.vote_count < 1000) {
-    //         return false;
-    //     }
-    
-    //     // If the movie passed all checks, include it in the filtered list
-    //     return true;
-    //     });
-    
-    //     setMovies(filteredMovies);
-    // }, [answers]);
+    useEffect(() => {
+        Filter(movies, answers, genreToId);
+      }, [movies, answers, genreToId]);
 
     return (
         <div className='Recommender flex flex-col justify-center items-center'>
