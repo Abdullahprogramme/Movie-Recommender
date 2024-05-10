@@ -2,8 +2,8 @@ import React from 'react';
 import { Checkbox, FormControlLabel, Box, Typography } from '@mui/material';
 import { useTheme, useMediaQuery } from '@mui/material';
 
-export default function QuestionForm({ title, options, onOptionToggle }) {
-  const optionsPerColumn = 4;
+export default function QuestionForm({ id, title, options, onOptionToggle }) {
+  const optionsPerColumn = 7;
   const firstColumnOptions = options.slice(0, optionsPerColumn);
   const secondColumnOptions = options.slice(optionsPerColumn);
 
@@ -12,7 +12,7 @@ export default function QuestionForm({ title, options, onOptionToggle }) {
   const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
-    <Box sx={{ marginTop: isScreenSmall ? 0 : 6 }}>
+    <Box sx={{ marginTop: isScreenSmall ? 0 : 3 }}>
       <Typography variant="h6" gutterBottom style={{ textAlign: 'center' }}>
         {title}
       </Typography>
@@ -24,7 +24,7 @@ export default function QuestionForm({ title, options, onOptionToggle }) {
               sx={{ width: '100%' }}
               control={
                 <Checkbox
-                  onChange={(event) => onOptionToggle(option, event.target.checked)}
+                  onChange={(event) => onOptionToggle(id, option, event.target.checked)}
                 />
               }
               label={option}
@@ -39,7 +39,7 @@ export default function QuestionForm({ title, options, onOptionToggle }) {
                 sx={{ width: '100%' }}
                 control={
                   <Checkbox
-                    onChange={(event) => onOptionToggle(option, event.target.checked)}
+                    onChange={(event) => onOptionToggle(id, option, event.target.checked)}
                   />
                 }
                 label={option}
