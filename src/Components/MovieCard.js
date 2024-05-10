@@ -1,10 +1,10 @@
 // MovieCard.js
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardMedia, CardContent, Typography, Rating, Box } from '@mui/material';
 import { useTheme, useMediaQuery } from "@mui/material";
 
 import Button from '@mui/material/Button';
-import Popover from '@mui/material/Popover';
+import CloseIcon from '@mui/icons-material/Close';
 
 const id_to_genre = {
     28: 'Action',
@@ -32,82 +32,80 @@ const id_to_genre = {
 const MovieCard = ({ movie }) => {
     const theme = useTheme();
     const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
-    
-    // Inside your component's state
-    const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
+    const [showOverview, setShowOverview] = useState(false);
+
+    const handleClick = () => {
+      setShowOverview(!showOverview); // Toggle showOverview on click
     };
 
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popover' : undefined;
+    // const open = Boolean(anchorEl);
+    // const id = open ? 'simple-popover' : undefined;
 
     return (
-      <Card sx={{ width: isScreenSmall ? 300 : 500, marginTop: 2 }}>
-          <CardMedia
-            component="img"
-            // height={isScreenSmall ? 70 : 100}
-            sx={{ 
-              height: isScreenSmall ? 320 : 350,
-              width: '100%',
-              backgroundSize: 'cover',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-            }}
-            image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-            alt={movie.title}
-          />
-          <CardContent>
-              <Typography gutterBottom variant="h5" component="div"
-              sx={{
-                whiteSpace: 'nowrap',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-              }}>
-                {movie.title}
-              </Typography>
-
-              <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Button aria-describedby={id} variant="contained" onClick={handleClick}
-                sx={{
-                  backgroundColor: '#3f51b5', // Change the color as per your preference
-                  color: '#fff', // Change the text color as per your preference
-                  '&:hover': {
-                    backgroundColor: '#303f9f', // Change the hover color as per your preference
-                  }}}>
-                  Show Overview
-                </Button>
-                <Popover
-                  id={id}
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handleClose}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                >
-                  <Typography sx={{ p: 2 }}>
-                    {movie.overview}
+      <Card sx={{ width: isScreenSmall ? 300 : 500, marginTop: 2, height: isScreenSmall ? 480 : 540 }}>
+          {!showOverview ? (
+            <>
+              <CardMedia
+                component="img"
+                // height={isScreenSmall ? 70 : 100}
+                sx={{ 
+                  height: isScreenSmall ? 320 : 350,
+                  width: '100%',
+                  backgroundSize: 'cover',
+                  backgroundRepeat: 'no-repeat',
+                  backgroundPosition: 'center',
+                }}
+                image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+              />
+              <CardContent>
+                  <Typography gutterBottom variant="h5" component="div"
+                  sx={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}>
+                    {movie.title}
                   </Typography>
-                </Popover>
 
-                <Rating name="read-only" value={movie.vote_average / 2} readOnly />
-              </Box>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <Button variant="contained" onClick={handleClick}
+                    sx={{
+                      backgroundColor: '#3f51b5', // Change the color as per your preference
+                      color: '#fff', // Change the text color as per your preference
+                      '&:hover': {
+                        backgroundColor: '#303f9f', // Change the hover color as per your preference
+                      }}}>
+                      Show Overview
+                    </Button>
 
-              <Typography variant="body2" color="text.secondary">
-                {movie.genre_ids.map(id => id_to_genre[id]).join(', ')}
-              </Typography>
+                    <Rating sx={{ marginTop: 1 }} name="read-only" value={movie.vote_average / 2} readOnly />
+                  </Box>
+
+                  <Typography variant="body2" color="text.secondary">
+                    {movie.genre_ids.map(id => id_to_genre[id]).join(', ')}
+                  </Typography>
+              </CardContent>
+            </>
+        ) : (
+          <CardContent>
+            <Button onClick={handleClick} >
+              <CloseIcon />
+            </Button>
+
+            <Typography sx={{ paddingTop: 1 }} >
+              {movie.overview.length > 520 ? `${movie.overview.slice(0, 520)}...` : movie.overview}
+            </Typography>
+
+            <Typography sx={{ paddingTop: 1 }} variant="body2" color="text.secondary">
+              Release Date: {movie.release_date}
+            </Typography>
+
+
+
           </CardContent>
+        )}
       </Card>
     );
 };
