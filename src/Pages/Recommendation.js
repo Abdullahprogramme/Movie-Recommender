@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useMediaQuery, useTheme, Alert } from '@mui/material';
 import QuestionForm from "../Components/QuestionForm";
 import { makeStyles } from '@mui/styles';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles({
   stepLabel: {
@@ -21,13 +22,16 @@ export default function Recommendation() {
     const theme = useTheme();
     const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
+    const navigate = useNavigate();
 
     const classes = useStyles();
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
-        if (activeStep === 4) {
+        if (activeStep === 3) {
             handleFinish();
+            navigate('/Recommender', { state: { selectedOptions } });
+            setSelectedOptions([])
         }
     };
 
@@ -39,12 +43,22 @@ export default function Recommendation() {
         setActiveStep(0);
     };
 
-    const handleOptionToggle = (option, isChecked) => {
+    const handleOptionToggle = (id, option, isChecked) => {
+      setSelectedOptions(prevOptions => {
         if (isChecked) {
-          setSelectedOptions((prevOptions) => [...prevOptions, option]);
+          if (prevOptions[id]) {
+            return { ...prevOptions, [id]: [...prevOptions[id], option] };
+          } else {
+            return { ...prevOptions, [id]: [option] };
+          }
         } else {
-          setSelectedOptions((prevOptions) => prevOptions.filter((o) => o !== option));
+          if (prevOptions[id]) {
+            return { ...prevOptions, [id]: prevOptions[id].filter(o => o !== option) };
+          } else {
+            return prevOptions;
+          }
         }
+      });
     };
 
     const handleFinish = () => {
@@ -52,21 +66,19 @@ export default function Recommendation() {
     };
 
     function getSteps() {
-        return ['Question 1', 'Question 2', 'Question 3', 'Question 4', 'Question 5'];
+        return ['Question 1', 'Question 2', 'Question 3', 'Question 4'];
     }
       
     function getStepContent(stepIndex) {
         switch (stepIndex) {
             case 0:
-              return <QuestionForm key={stepIndex} title="What is your favourite movie genre?" options={['Action', 'Comedy', 'Drama', 'Horror', 'Sci-Fi', 'Thriller', 'Romance', 'Fantasy']} onOptionToggle={handleOptionToggle} />;
+              return <QuestionForm key={stepIndex} id="genre" title="What is your favourite movie genre?" options={['Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Science Fiction', 'Thriller']} onOptionToggle={handleOptionToggle} />;
             case 1:
-              return <QuestionForm key={stepIndex} title="What decade do you prefer your movies to be from?" options={['1980s', '1990s', '2000s', '2010s']} onOptionToggle={handleOptionToggle} />;
+              return <QuestionForm key={stepIndex} id="period" title="What period do you prefer your movies to be from?" options={['Before 2000', '2000-2010', 'After 2010']} onOptionToggle={handleOptionToggle} />;
             case 2:
-              return <QuestionForm key={stepIndex} title="Do you prefer movies with a high IMDB rating?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
+              return <QuestionForm key={stepIndex} id="highRating" title="Do you prefer movies with a high TMDB rating?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
             case 3:
-              return <QuestionForm key={stepIndex} title="Do you prefer movies that are critically acclaimed?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
-            case 4:
-              return <QuestionForm key={stepIndex} title="Do you prefer movies with a specific actor or director?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
+              return <QuestionForm key={stepIndex} id="criticalAcclaim" title="Do you prefer movies that are critically acclaimed?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
             default:
               return 'Unknown stepIndex';
         }
@@ -76,7 +88,7 @@ export default function Recommendation() {
         <div>
           <Header />
         
-          <Alert 
+          {/* <Alert 
             severity="info" 
             sx={{ 
               textAlign: 'center', 
@@ -88,7 +100,7 @@ export default function Recommendation() {
             }}
           >
             Fill out the following questions to get a movie recommendation!
-          </Alert>
+          </Alert> */}
 
           <Card sx={{ 
             backgroundColor: 'rgba(255, 255, 255, 0.63)', 
@@ -101,11 +113,11 @@ export default function Recommendation() {
             margin: 2,
             // marginTop: 5,
             width: isScreenSmall ? '300px' : '600px',
-            height: isScreenSmall ? '450px' : '500px',
+            height: isScreenSmall ? '550px' : '580px',
             marginLeft: 'auto',
             marginRight: 'auto'
           }}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 5 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: isScreenSmall ? 0 : 5 }}>
             {isScreenSmall ? (
               <Stepper activeStep={activeStep} alternativeLabel>
                 <Step>
@@ -144,8 +156,8 @@ export default function Recommendation() {
                 </Box>
               )}
           </Box>
-          </Card>
-        </div>
+        </Card>
+      </div>
     );
 }
 
