@@ -2,7 +2,7 @@ import React from "react";
 import Header from "../Components/Header";
 import { Stepper, Step, StepLabel, Button, Typography, Box, Card, ButtonGroup } from '@mui/material';
 import { useState } from 'react';
-import { useMediaQuery, useTheme, Alert } from '@mui/material';
+import { useMediaQuery, useTheme } from '@mui/material';
 import QuestionForm from "../Components/QuestionForm";
 import { makeStyles } from '@mui/styles';
 import { useNavigate } from 'react-router-dom';
@@ -30,7 +30,7 @@ export default function Recommendation() {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         if (activeStep === 3) {
             handleFinish();
-            navigate('/Recommender', { state: { selectedOptions } });
+            navigate('/Recommender', { state: { selectedOptions, formSubmitted: true } });
             setSelectedOptions([])
         }
     };
