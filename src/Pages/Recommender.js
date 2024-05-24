@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Header from "../Components/Header";
-import { Button, ButtonGroup, Tooltip, IconButton } from "@mui/material";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { Button, ButtonGroup, Tooltip, IconButton, Snackbar, Alert } from "@mui/material";
 import { useLocation } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import axios from 'axios';
 import MovieCard from '../Components/MovieCard';
 import Filter from '../Components/Filter';
 
 export default function Recommender() {
-    const theme = useTheme();
-    const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [movies, setMovies] = useState([]);
     // And the user's answers in the `answers` state
     const [answers, setAnswers] = useState({});
-
+    const [filtered, setFiltered] = useState([]);
     const [tooltipOpen, setTooltipOpen] = useState(false);
 
     const handleTooltipClick = () => {
@@ -27,7 +25,7 @@ export default function Recommender() {
     const [currentMovieIndex, setCurrentMovieIndex] = useState(0);
 
     const handleNext = () => {
-        if (currentMovieIndex < movies.length - 1) {
+        if (currentMovieIndex < filtered.length - 1) {
           setCurrentMovieIndex(currentMovieIndex + 1);
         }
     };
@@ -38,10 +36,73 @@ export default function Recommender() {
         }
     };
 
-    const location = useLocation();
+    const auth = getAuth();
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [userName, setUserName] = useState('');
+
     useEffect(() => {
-        setAnswers(location.state ? location.state.selectedOptions : null);
-      }, [location]);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user && !localStorage.getItem('welcomeShown')) {
+                setUserName(user.displayName);
+                setOpenSnackbar(true);
+                localStorage.setItem('welcomeShown', 'true');
+            }
+        });
+    
+        // Cleanup function to unsubscribe from the listener when the component unmounts
+        return () => unsubscribe();
+    }, []);
+    
+
+
+    const fetchAllMovies = async () => {
+        let allMovies = [];
+        for (let i = 1; i <= 80; i++) {  
+            const movies = await fetchMovies(i);
+            allMovies = allMovies.concat(movies);
+        }
+        console.log('Fetched all movies:', allMovies.length);
+        return allMovies;
+    };
+    
+    const filterMovies = (allMovies, answers) => {
+        console.log('Before filtering:', allMovies.length);
+        const filteredMovies = Filter(allMovies, answers, genreToId);
+        console.log('After filtering:', filteredMovies.length);
+        return filteredMovies;
+    };
+    
+    const get = () => {
+        let isMounted = true;
+        fetchAllMovies().then(allMovies => {
+            if (isMounted) {
+                const filteredMovies = filterMovies(allMovies, answers);
+                setFiltered(filteredMovies);
+                console.log(allMovies.length, filteredMovies.length);
+            }
+        });
+    
+        return () => {
+            // When the component is unmounted, set isMounted to false
+            isMounted = false;
+        };
+    };
+    const location = useLocation();
+    const defaultState = { formSubmitted: false, selectedOptions: null };
+    const state = location.state || defaultState;
+
+    useEffect(() => {
+        if (state.formSubmitted === true && state.selectedOptions !== null) {
+            setAnswers(state.selectedOptions);
+        }
+    }, [state.formSubmitted, state.selectedOptions]);
+
+    useEffect(() => {
+        if (answers) {
+            get();
+        }
+    }, [answers]);
+    
 
     console.log(answers)
     const fetchMovies = async (page) => {
@@ -83,57 +144,44 @@ export default function Recommender() {
       
         return genres[genreName];
       };
-    
-    useEffect(() => {
-        let isMounted = true;
-        const fetchAllMovies = async () => {
-            let allMovies = [];
-            for (let i = 1; i <= 40; i++) {  
-              const movies = await fetchMovies(i);
-              allMovies = allMovies.concat(movies);
-            }
-            if (isMounted) {
-                setMovies(allMovies);
-            }
-          };
-        
-          fetchAllMovies();
-          return () => {
-            // When the component is unmounted, set isMounted to false
-            isMounted = false;
-          };
-    }, []);
 
-
-    useEffect(() => {
-        Filter(movies, answers, genreToId);
-      }, [movies, answers, genreToId]);
 
     return (
         <div className='Recommender flex flex-col justify-center items-center'>
             <Header />
+            
+            <Snackbar 
+                open={openSnackbar} 
+                autoHideDuration={3000} 
+                onClose={() => setOpenSnackbar(false)}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+                    Welcome {userName}
+                </Alert>
+            </Snackbar>
 
             <Tooltip 
             title="Fill the form in the Recommendation page and see the recommendations here." 
             placement="bottom-start"
+            className='myTooltip'
             open={tooltipOpen}
             >
             <IconButton 
                 aria-label="info"
                 onClick={handleTooltipClick}
-                sx={{ 
-                    position: 'absolute',
-                    bottom: 2, // adjust this value to position the tooltip below the Header
-                    left: 0,
-                    color: 'whitesmoke',
-                }}
+                // sx={{ 
+                //     position: 'absolute',
+                //     bottom: 2, // adjust this value to position the tooltip below the Header
+                //     left: 0,
+                //     color: 'whitesmoke',
+                // }}
             >
                 <InfoIcon />
             </IconButton>
             </Tooltip>
             
             {/* Render the movies here */}
-            {movies.length > 0 && <MovieCard movie={movies[currentMovieIndex]} sx={{ justifyContent: 'center', alignItems: 'center' }} />}
+            {filtered.length > 0 && <MovieCard movie={filtered[currentMovieIndex]} sx={{ justifyContent: 'center', alignItems: 'center' }} />}
             
             {/* <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, position: 'absolute', bottom: 10 }}></Box> */}
                 <ButtonGroup variant="contained" aria-label="Basic button group" sx={{marginTop: 1}}>
