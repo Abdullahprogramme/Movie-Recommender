@@ -10,7 +10,7 @@ import validator from 'validator';
 
 // Firebase imports
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 // React Router imports
 import { useNavigate } from 'react-router-dom';
@@ -145,7 +145,9 @@ export default function Signup() {
       
           // Save credentials to Firebase
           try {
-              await createUserWithEmailAndPassword(auth, formValues.email, formValues.password);
+              const userCredential = await createUserWithEmailAndPassword(auth, formValues.email, formValues.password);
+              const user = userCredential.user;
+              await updateProfile(user, { displayName: formValues.name });
               // user is now signed up, you can use the 'user' object for further operations
 
               // Show confirmation message
