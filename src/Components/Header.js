@@ -5,6 +5,8 @@ import { styled } from '@mui/system';
 import { Snackbar, Alert } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
+import { getAuth, signOut } from 'firebase/auth';
+
 const StyledLink = styled(Link)({
   textDecoration: 'none',
   color: 'inherit'
@@ -47,9 +49,12 @@ useEffect(() => {
 
 const handleSignout = async () => {
   setLoading(true);
+  const auth = getAuth();
   try {
+    await signOut(auth);
     // Clear user data here
     localStorage.removeItem('token');
+    localStorage.setItem('welcomeShown', 'false');
     // Wait for 1 second to simulate the signout process
     await new Promise(resolve => setTimeout(resolve, 1000));
     if (isMounted.current) {
