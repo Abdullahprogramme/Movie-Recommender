@@ -31,3 +31,10 @@
     }
   }
 
+  .myTooltip {
+    position: absolute !important;
+    bottom: 2px !important;
+    left: 0px !important;
+    color: whitesmoke !important;
+}
+
