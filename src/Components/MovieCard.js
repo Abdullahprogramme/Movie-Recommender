@@ -1,6 +1,6 @@
 // MovieCard.js
 import React, { useState } from 'react';
-import { Card, CardMedia, CardContent, Typography, Rating, Box } from '@mui/material';
+import { Card, CardMedia, CardContent, Typography, Rating, Box, Skeleton } from '@mui/material';
 import { useTheme, useMediaQuery } from "@mui/material";
 
 import Button from '@mui/material/Button';
@@ -34,6 +34,7 @@ const MovieCard = ({ movie }) => {
     const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
     const [showOverview, setShowOverview] = useState(false);
+    const [imgLoaded, setImgLoaded] = useState(false);
 
     const handleClick = () => {
       setShowOverview(!showOverview); // Toggle showOverview on click
@@ -43,7 +44,7 @@ const MovieCard = ({ movie }) => {
     // const id = open ? 'simple-popover' : undefined;
 
     return (
-      <Card sx={{ width: isScreenSmall ? 300 : 500, marginTop: 2, height: isScreenSmall ? 480 : 540 }}>
+      <Card sx={{ width: isScreenSmall ? 300 : 400, marginTop: 2, height: isScreenSmall ? 490 : 540, backgroundColor: '#EADBC8'}}>
           {!showOverview ? (
             <>
               <CardMedia
@@ -52,13 +53,16 @@ const MovieCard = ({ movie }) => {
                 sx={{ 
                   height: isScreenSmall ? 320 : 350,
                   width: '100%',
-                  backgroundSize: 'cover',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundPosition: 'center',
+                  // backgroundSize: 'cover',
+                  // backgroundRepeat: 'no-repeat',
+                  // backgroundPosition: 'center',
+                  objectFit: 'fill',
                 }}
                 image={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
+                onLoad={() => setImgLoaded(true)}
               />
+              {!imgLoaded && <Skeleton variant="rectangular" width="100%" height={isScreenSmall ? 320 : 350} />}
               <CardContent>
                   <Typography gutterBottom variant="h5" component="div"
                   sx={{
@@ -101,8 +105,7 @@ const MovieCard = ({ movie }) => {
             <Typography sx={{ paddingTop: 1 }} variant="body2" color="text.secondary">
               Release Date: {movie.release_date}
             </Typography>
-
-
+          
 
           </CardContent>
         )}
