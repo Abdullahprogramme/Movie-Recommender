@@ -1,36 +1,77 @@
 const Filter = (movies, answers, genreToId) => {
-
-    const filtered = movies.filter(movie => {
-      // Filter by genre
-      if (answers.genre && !movie.genre_ids.includes(genreToId(answers.genre))) {
-        return false;
+  console.log('Running Filter function with answers:', answers); // Add this line
+    
+    // const filtered = movies.filter(movie => {
+      if (!answers) {
+        return movies;  // If answers or answers.genre is not defined, return the original movie list
+      }
+  
+      let filtered = movies;
+      // Filter by genre first
+      if (answers.genre) {
+        filtered = filtered.filter(movie => {
+          for (let i = 0; i < answers.genre.length; i++) {
+            if (movie.genre_ids.includes(genreToId(answers.genre[i]))) {
+              return true;
+            }
+          }
+          return false;
+        });
+        console.log('After genre filter:', filtered.length); // Add this line
       }
 
-      // Filter by period
+      /// Filter by period
       if (answers.period) {
-        const year = parseInt(movie.release_date.substring(0, 4));
-        if ((answers.period === 'Before 2000' && year >= 2000) ||
-            (answers.period === '2000-2010' && (year < 2000 || year > 2010)) ||
-            (answers.period === 'After 2010' && year <= 2010)) {
-          return false;
-        }
+        filtered = filtered.filter(movie => {
+          const year = parseInt(movie.release_date.substring(0, 4));
+          return answers.period.some(period => {
+              if (period === 'Before 2000' && year < 2000) {
+                  return true;
+              }
+              if (period === '2000-2010' && (year >= 2000 && year <= 2010)) {
+                  return true;
+              }
+              if (period === 'After 2010' && year > 2010) {
+                  return true;
+              }
+              return false;
+          });
+      });
+        console.log('After period filter:', filtered.length); // Add this line
       }
 
       // Filter by TMDB rating
-      if (answers.highRating === 'Yes' && movie.vote_average < 7) {
+      if (answers.highRating) {
+        filtered = filtered.filter(movie => {
+        if (answers.highRating[0] === 'Yes' && movie.vote_average >= 7) {
+          return true;
+        }
+        if (answers.highRating[0] === 'No' && movie.vote_average < 7) {
+          return true;
+        }
         return false;
-      }
+      });
+      console.log('After highRating filter:', filtered.length); // Add this line
+    }
 
       // Filter by critical acclaim
-      if (answers.criticalAcclaim === 'Yes' && movie.vote_count < 1000) {
+      if (answers.criticalAcclaim) {
+        filtered = filtered.filter(movie => {
+        if (answers.criticalAcclaim[0] === 'Yes' && movie.vote_count >= 1000) {
+          return true;
+        }
+        if (answers.criticalAcclaim[0] === 'No' && movie.vote_count < 1000) {
+          return true;
+        }
         return false;
-      }
-
-      // If the movie passed all checks, include it in the filtered list
-      return true;
-    });
+      });
+      console.log('After criticalAcclaim filter:', filtered.length); // Add this line
+    }
 
 
+// });
+  
+  return filtered;
 };
 
 export default Filter;
