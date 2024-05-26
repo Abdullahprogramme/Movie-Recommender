@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Header from "../Components/Header";
 import { Button, ButtonGroup, Tooltip, IconButton, Snackbar, Alert } from "@mui/material";
 import { useLocation } from 'react-router-dom';
@@ -11,8 +11,8 @@ import MovieCard from '../Components/MovieCard';
 import Filter from '../Components/Filter';
 
 export default function Recommender() {
-
-    const [movies, setMovies] = useState([]);
+    const isMounted = useRef(true);
+    // const [movies, setMovies] = useState([]);
     // And the user's answers in the `answers` state
     const [answers, setAnswers] = useState({});
     const [filtered, setFiltered] = useState([]);
@@ -40,24 +40,13 @@ export default function Recommender() {
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [userName, setUserName] = useState('');
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user && !localStorage.getItem('welcomeShown')) {
-                setUserName(user.displayName);
-                setOpenSnackbar(true);
-                localStorage.setItem('welcomeShown', 'true');
-            }
-        });
     
-        // Cleanup function to unsubscribe from the listener when the component unmounts
-        return () => unsubscribe();
-    }, []);
     
 
 
     const fetchAllMovies = async () => {
         let allMovies = [];
-        for (let i = 1; i <= 80; i++) {  
+        for (let i = 1; i <= 150; i++) {  
             const movies = await fetchMovies(i);
             allMovies = allMovies.concat(movies);
         }
@@ -72,21 +61,35 @@ export default function Recommender() {
         return filteredMovies;
     };
     
-    const get = () => {
-        let isMounted = true;
+    useEffect(() => {
+        return () => {
+          isMounted.current = false;
+        };
+      }, []);
+      
+      const get = useCallback(() => {
         fetchAllMovies().then(allMovies => {
-            if (isMounted) {
-                const filteredMovies = filterMovies(allMovies, answers);
-                setFiltered(filteredMovies);
-                console.log(allMovies.length, filteredMovies.length);
+          if (isMounted.current) {
+            const filteredMovies = filterMovies(allMovies, answers);
+            setFiltered(filteredMovies);
+            console.log(allMovies.length, filteredMovies.length);
+          }
+        });
+      }, [answers, fetchAllMovies, filterMovies]);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+            if (user && !localStorage.getItem('welcomeShown')) {
+                setUserName(user.displayName);
+                setOpenSnackbar(true);
+                localStorage.setItem('welcomeShown', 'true');
             }
         });
     
-        return () => {
-            // When the component is unmounted, set isMounted to false
-            isMounted = false;
-        };
-    };
+        // Cleanup function to unsubscribe from the listener when the component unmounts
+        return () => unsubscribe();
+    }, [auth, get]);
+    
     const location = useLocation();
     const defaultState = { formSubmitted: false, selectedOptions: null };
     const state = location.state || defaultState;
@@ -161,7 +164,7 @@ export default function Recommender() {
             </Snackbar>
 
             <Tooltip 
-            title="Fill the form in the Recommendation page and see the recommendations here." 
+            title="Fill the form in the Recommendation page and see the recommendations here else browse freely" 
             placement="bottom-start"
             className='myTooltip'
             open={tooltipOpen}
@@ -169,12 +172,6 @@ export default function Recommender() {
             <IconButton 
                 aria-label="info"
                 onClick={handleTooltipClick}
-                // sx={{ 
-                //     position: 'absolute',
-                //     bottom: 2, // adjust this value to position the tooltip below the Header
-                //     left: 0,
-                //     color: 'whitesmoke',
-                // }}
             >
                 <InfoIcon />
             </IconButton>
