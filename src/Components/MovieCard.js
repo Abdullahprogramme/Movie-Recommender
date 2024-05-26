@@ -44,7 +44,7 @@ const MovieCard = ({ movie }) => {
     // const id = open ? 'simple-popover' : undefined;
 
     return (
-      <Card sx={{ width: isScreenSmall ? 300 : 400, marginTop: 2, height: isScreenSmall ? 490 : 540, backgroundColor: '#EADBC8'}}>
+      <Card sx={{ width: isScreenSmall ? 300 : 360, marginTop: 2, height: isScreenSmall ? 490 : 540, backgroundColor: '#EADBC8'}}>
           {!showOverview ? (
             <>
               <CardMedia
