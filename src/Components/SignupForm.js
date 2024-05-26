@@ -1,6 +1,7 @@
 // SignupForm.js
 import { TextField, InputAdornment, IconButton, Button, CircularProgress } from '@material-ui/core';
 import { Visibility, VisibilityOff, PersonAdd } from '@material-ui/icons';
+import { Stack } from '@mui/material';
 
 function SignupForm({ formValues, handleInputChange, handleClickShowPassword, showPassword, handleSignup, formErrors, classes, loading }) {
     return (
@@ -45,6 +46,8 @@ function SignupForm({ formValues, handleInputChange, handleClickShowPassword, sh
                     ),
                 }}
             />
+            
+            <Stack direction='column' spacing={2}>
             {loading ? (
               <CircularProgress />
             ) : (
@@ -58,6 +61,7 @@ function SignupForm({ formValues, handleInputChange, handleClickShowPassword, sh
                 Signup
               </Button>
             )}
+            </Stack>
         </form>
     );
 }
