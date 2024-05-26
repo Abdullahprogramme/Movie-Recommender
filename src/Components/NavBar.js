@@ -26,7 +26,7 @@ export default function NavBar() {
             onClose={handleClose}
             onOpen={handleOpen}
             open={open}
-
+            className='main-speed-dial'
         >
         {actions.map((action) => (
             <SpeedDialAction
@@ -38,6 +38,7 @@ export default function NavBar() {
                 event.preventDefault();
                 window.open(action.href, '_blank', 'noopener,noreferrer');
             }}
+            className='action-speed-dial'
             />
         ))}
         </SpeedDial>
