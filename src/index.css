@@ -38,3 +38,13 @@
     color: whitesmoke !important;
 }
 
+.main-speed-dial .MuiSpeedDial-fab {
+  background-color: rgb(49, 114, 136) !important;
+  border-radius: 50% !important; 
+}
+
+.action-speed-dial {
+  background-color: white !important;
+  border-radius: 50% !important;
+  margin-top: 10px !important;
+}
