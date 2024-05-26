@@ -11,7 +11,7 @@ const Filter = (movies, answers, genreToId) => {
       if (answers.genre) {
         filtered = filtered.filter(movie => {
           for (let i = 0; i < answers.genre.length; i++) {
-            if (movie.genre_ids.includes(genreToId(answers.genre[i]))) {
+            if (movie.genre_ids && movie.genre_ids.includes(genreToId(answers.genre[i]))) {
               return true;
             }
           }
