@@ -1,16 +1,21 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Header from "../Components/Header";
-import { Button, ButtonGroup, Tooltip, IconButton, Snackbar, Alert } from "@mui/material";
+import { Button, ButtonGroup, Tooltip, IconButton, Snackbar, Alert, Skeleton } from "@mui/material";
 import { useLocation } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+import { useTheme, useMediaQuery } from "@mui/material";
 
 import axios from 'axios';
 import MovieCard from '../Components/MovieCard';
 import Filter from '../Components/Filter';
 
 export default function Recommender() {
+    const theme = useTheme();
+    const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
     const isMounted = useRef(true);
     // const [movies, setMovies] = useState([]);
     // And the user's answers in the `answers` state
@@ -178,8 +183,12 @@ export default function Recommender() {
             </Tooltip>
             
             {/* Render the movies here */}
-            {filtered.length > 0 && <MovieCard movie={filtered[currentMovieIndex]} sx={{ justifyContent: 'center', alignItems: 'center' }} />}
-            
+            {filtered.length > 0 ? (
+            <MovieCard movie={filtered[currentMovieIndex]} sx={{ justifyContent: 'center', alignItems: 'center' }} />
+            ) : (
+            <Skeleton variant="rectangular" width={isScreenSmall ? 300 : 360} height={isScreenSmall ? 490 : 540} />
+            )}
+
             {/* <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, position: 'absolute', bottom: 10 }}></Box> */}
                 <ButtonGroup variant="contained" aria-label="Basic button group" sx={{marginTop: 1}}>
                     <Button variant="contained" color='secondary' onClick={handleBack} disabled={currentMovieIndex === 0}>
