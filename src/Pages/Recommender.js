@@ -49,7 +49,7 @@ export default function Recommender() {
     
 
 
-    const fetchAllMovies = async () => {
+    const fetchAllMovies = useCallback(async () => {
         let allMovies = [];
         for (let i = 1; i <= 150; i++) {  
             const movies = await fetchMovies(i);
@@ -57,14 +57,14 @@ export default function Recommender() {
         }
         console.log('Fetched all movies:', allMovies.length);
         return allMovies;
-    };
+    }, []);
     
-    const filterMovies = (allMovies, answers) => {
+    const filterMovies = useCallback((allMovies, answers) => {
         console.log('Before filtering:', allMovies.length);
         const filteredMovies = Filter(allMovies, answers, genreToId);
         console.log('After filtering:', filteredMovies.length);
         return filteredMovies;
-    };
+    }, []);
     
     useEffect(() => {
         return () => {
@@ -109,7 +109,7 @@ export default function Recommender() {
         if (answers) {
             get();
         }
-    }, [answers]);
+    }, [get, answers]);
     
 
     console.log(answers)
