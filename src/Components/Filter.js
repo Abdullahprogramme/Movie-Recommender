@@ -2,7 +2,7 @@ const Filter = (movies, answers, genreToId) => {
   console.log('Running Filter function with answers:', answers); // Add this line
     
     // const filtered = movies.filter(movie => {
-      if (!answers || !answers.genre && !answers.period && !answers.highRating && !answers.criticalAcclaim) {
+      if (!answers || !answers.genre || !answers.period || !answers.highRating || !answers.criticalAcclaim) {
         return movies;  // If answers or answers.genre is not defined, return the original movie list
       }
   
