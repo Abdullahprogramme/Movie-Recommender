@@ -47,32 +47,33 @@ useEffect(() => {
   };
 }, []);
 
-useEffect(() => {
-  // When the component mounts, add an event listener for the popstate event
-  window.addEventListener('popstate', handlePopState);
+// useEffect(() => {
+//   // When the component mounts, add an event listener for the popstate event
+//   window.addEventListener('popstate', handlePopState);
 
-  return () => {
-    // When the component unmounts, remove the event listener
-    window.removeEventListener('popstate', handlePopState);
-  };
-}, []);
+//   return () => {
+//     // When the component unmounts, remove the event listener
+//     window.removeEventListener('popstate', handlePopState);
+//   };
+// }, []);
 
-const handlePopState = (event) => {
-  // When the popstate event is fired, navigate the user forward
-  window.history.forward();
-};
+// const handlePopState = (event) => {
+//   // When the popstate event is fired, navigate the user forward
+//   window.history.forward();
+// };
 
 const handleSignout = async () => {
   setLoading(true);
   const auth = getAuth();
 
   try {
+    await new Promise(resolve => setTimeout(resolve, 1000));
     await signOut(auth);
     // Clear user data here
     localStorage.removeItem('token');
     localStorage.setItem('welcomeShown', 'false');
     // Wait for 1 second to simulate the signout process
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     navigate('/', { replace: true });
     // if (isMounted.current) {
     //   navigate('/');
