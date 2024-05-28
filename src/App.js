@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { styled } from '@mui/system';
 import Signup from "./Pages/Signup";
@@ -7,7 +7,10 @@ import Recommendation from "./Pages/Recommendation";
 import NavBar from "./Components/NavBar";
 import Movie from "./Assets/Movie.jpg";
 import Movie_Small from "./Assets/Movie_Small.jpg";
-import { useMediaQuery, useTheme } from '@mui/material';
+import { useMediaQuery, useTheme, CircularProgress } from '@mui/material';
+
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { Navigate } from "react-router-dom";
 
 function NavBarWithLocation() {
   const location = useLocation();
@@ -32,15 +35,37 @@ function App() {
     WebkitBackdropFilter: 'blur(80px)',
   });
 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+      setIsLoading(false);
+    });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <Router>
       <Background>
         <NavBarWithLocation />
         <Routes>
-          <Route path="/Recommender" element={<Recommender />} />
-          <Route path="/Recommendation" element={<Recommendation />} />
-          <Route path="/" element={<Signup />} />
+        <Route path="/" element={<Signup />} />
+          <Route path="/Recommender" element={isAuthenticated ? <Recommender /> : <Navigate to="/" />} />
+          <Route path="/Recommendation" element={isAuthenticated ? <Recommendation /> : <Navigate to="/" />} />
         </Routes>
       </Background>
     </Router>
