@@ -17,7 +17,7 @@ export default function QuestionForm({ id, title, options, onOptionToggle }) {
         {title}
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '10px' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginLeft: '10px', gap: '10px' }}>
           {firstColumnOptions.map((option, index) => (
             <FormControlLabel
               key={index}
@@ -32,7 +32,7 @@ export default function QuestionForm({ id, title, options, onOptionToggle }) {
           ))}
         </Box>
         {options.length > optionsPerColumn && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
             {secondColumnOptions.map((option, index) => (
               <FormControlLabel
                 key={index + optionsPerColumn}
