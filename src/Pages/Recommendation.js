@@ -24,6 +24,7 @@ export default function Recommendation() {
 
     const navigate = useNavigate();
 
+
     const classes = useStyles();
 
     const handleNext = () => {
@@ -72,9 +73,9 @@ export default function Recommendation() {
     function getStepContent(stepIndex) {
         switch (stepIndex) {
             case 0:
-              return <QuestionForm key={stepIndex} id="genre" title="What is your favourite movie genre?" options={['Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Science Fiction', 'Thriller']} onOptionToggle={handleOptionToggle} />;
+              return <QuestionForm key={stepIndex} id="genre" title="What is your favourite movie genre?" options={['Action', 'Adventure', 'Animation', 'Comedy', 'Crime', 'Documentary', 'Drama', 'Family', 'Fantasy', 'Horror', 'Mystery', 'Romance', 'Thriller', 'Science Fiction']} onOptionToggle={handleOptionToggle} />;
             case 1:
-              return <QuestionForm key={stepIndex} id="period" title="What period do you prefer your movies to be from?" options={['Before 2000', '2000-2010', 'After 2010']} onOptionToggle={handleOptionToggle} />;
+              return <QuestionForm key={stepIndex} id="period" title="What period do you prefer your movies to be from?" options={['Before 1980', '1980-1990', '1990-2000', '2000-2010', '2010-2020', 'After 2020']} onOptionToggle={handleOptionToggle} />;
             case 2:
               return <QuestionForm key={stepIndex} id="highRating" title="Do you prefer movies with a high TMDB rating?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
             case 3:
