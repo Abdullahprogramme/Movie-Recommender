@@ -5,17 +5,26 @@ import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
 import { useState } from 'react';
 import { Alert } from '@material-ui/lab';
 import { Stack } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 function LoginForm({ email, setEmail, password, setPassword, showPassword, setShowPassword, handleLogin, formErrors, loading, classes }) {
 
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+
 
   const handleForgotPassword = (event) => {
     event.preventDefault(); // Prevent the default form submission
+    setOpenDialog(true);
+  };
   
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+  
+  const handleConfirmReset = () => {
     const auth = getAuth();
-  
     sendPasswordResetEmail(auth, email)
       .then(() => {
         // Password reset email sent successfully
@@ -27,6 +36,7 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
         setSnackbarMessage('Enter your email');
         setOpenSnackbar(true);
       });
+    setOpenDialog(false);
   };
 
   const handleCloseSnackbar = (event, reason) => {
@@ -44,6 +54,22 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
               {snackbarMessage}
             </Alert>
         </Snackbar>
+
+        <Dialog
+          open={openDialog}
+          onClose={handleDialogClose}
+        >
+          <DialogTitle>Confirm Password Reset</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Send password reset email?
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDialogClose}>Cancel</Button>
+            <Button onClick={handleConfirmReset}>Confirm</Button>
+          </DialogActions>
+        </Dialog>
         
         <form onSubmit={handleLogin}>
             <TextField
