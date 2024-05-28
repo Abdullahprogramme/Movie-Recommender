@@ -25,19 +25,28 @@ const Filter = (movies, answers, genreToId) => {
         filtered = filtered.filter(movie => {
           const year = parseInt(movie.release_date.substring(0, 4));
           return answers.period.some(period => {
-              if (period === 'Before 2000' && year < 2000) {
-                  return true;
-              }
-              if (period === '2000-2010' && (year >= 2000 && year <= 2010)) {
-                  return true;
-              }
-              if (period === 'After 2010' && year > 2010) {
-                  return true;
-              }
-              return false;
+            if (period === 'Before 1980' && year < 1980) {
+              return true;
+            }
+            if (period === '1980-1990' && (year >= 1980 && year <= 1990)) {
+              return true;
+            }
+            if (period === '1990-2000' && (year >= 1990 && year <= 2000)) {
+              return true;
+            }
+            if (period === '2000-2010' && (year >= 2000 && year <= 2010)) {
+              return true;
+            }
+            if (period === '2010-2020' && (year >= 2010 && year <= 2020)) {
+              return true;
+            }
+            if (period === 'After 2020' && year > 2020) {
+              return true;
+            }
+            return false;
           });
-      });
-        console.log('After period filter:', filtered.length); // Add this line
+        });
+        console.log('After period filter:', filtered.length);
       }
 
       // Filter by TMDB rating
