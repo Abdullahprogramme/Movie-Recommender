@@ -12,6 +12,7 @@ import axios from 'axios';
 import MovieCard from '../Components/MovieCard';
 import Filter from '../Components/Filter';
 
+
 export default function Recommender() {
     const theme = useTheme();
     const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
@@ -42,11 +43,9 @@ export default function Recommender() {
     };
 
     const auth = getAuth();
+    
     const [openSnackbar, setOpenSnackbar] = useState(false);
     const [userName, setUserName] = useState('');
-
-    
-    
 
 
     const fetchAllMovies = useCallback(async () => {
@@ -186,7 +185,7 @@ export default function Recommender() {
             {filtered.length > 0 ? (
             <MovieCard movie={filtered[currentMovieIndex]} sx={{ justifyContent: 'center', alignItems: 'center' }} />
             ) : (
-            <Skeleton variant="rectangular" width={isScreenSmall ? 300 : 360} height={isScreenSmall ? 490 : 540} />
+            <Skeleton variant="rectangular" width={isScreenSmall ? 300 : 360} height={isScreenSmall ? 490 : 540} sx={{ marginTop: 2 }} />
             )}
 
             {/* <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, position: 'absolute', bottom: 10 }}></Box> */}
