@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../Components/Header";
-import { Stepper, Step, StepLabel, Button, Typography, Box, Card, ButtonGroup, Tooltip, IconButton } from '@mui/material';
+import { Stepper, Step, StepLabel, Button, Box, Card, ButtonGroup, Tooltip, IconButton, Alert } from '@mui/material';
 import { useState } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
 import QuestionForm from "../Components/QuestionForm";
@@ -22,6 +22,8 @@ export default function Recommendation() {
     const steps = getSteps();
     const [selectedOptions, setSelectedOptions] = useState([]);
 
+    const [showAlert, setShowAlert] = useState(false);
+
     const theme = useTheme();
     const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -33,6 +35,12 @@ export default function Recommendation() {
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
         if (activeStep === 3) {
+            if (Object.keys(selectedOptions).length < 4) {
+                // Show a snackbar
+                setShowAlert(true);
+                setActiveStep((prevActiveStep) => prevActiveStep - 1);
+                return;
+            }
             handleFinish();
             navigate('/Recommender', { state: { selectedOptions, formSubmitted: true } });
             setSelectedOptions([])
@@ -48,9 +56,9 @@ export default function Recommendation() {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleReset = () => {
-        setActiveStep(0);
-    };
+    // const handleReset = () => {
+    //     setActiveStep(0);
+    // };
 
     const handleOptionToggle = (id, option, isChecked) => {
       setSelectedOptions(prevOptions => {
@@ -111,7 +119,24 @@ export default function Recommendation() {
                 >
                     <InfoIcon />
                 </IconButton>
-            </Tooltip>
+          </Tooltip>
+
+          {showAlert && 
+            <Alert severity="error" onClose={() => setShowAlert(false)}
+            sx={{ 
+              position: 'absolute', 
+              top: { xs: '10px', sm: '20px' }, 
+              left: '50%', 
+              transform: 'translateX(-50%)', 
+              zIndex: 1000, 
+              width: 'auto', 
+              minWidth: '200px', 
+              maxWidth: '90%',
+            }}>
+            Please answer all the questions to get the recommendation.
+            </Alert>
+          }
+
 
           <Card sx={{ 
             backgroundColor: 'rgba(255, 255, 255, 0.63)', 
@@ -146,12 +171,12 @@ export default function Recommendation() {
             )}
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              {activeStep === steps.length ? (
+              {/* {activeStep === steps.length ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <Typography>All steps completed</Typography>
                       <Button variant="outlined" color="primary" onClick={handleReset} sx={{justifyContent: 'center', alignItems: 'center', marginTop: 2 }}>Reset</Button>
                   </Box>
-              ) : (
+              ) : ( */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   {getStepContent(activeStep)}
                   <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, position: 'absolute', bottom: 10 }}>
@@ -165,7 +190,7 @@ export default function Recommendation() {
                     </ButtonGroup>
                   </Box>
                 </Box>
-              )}
+              {/* )} */}
           </Box>
         </Card>
       </div>
