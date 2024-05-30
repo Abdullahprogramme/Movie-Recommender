@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Header from "../Components/Header";
-import { Button, ButtonGroup, Tooltip, IconButton, Snackbar, Alert, Skeleton } from "@mui/material";
+import { Button, ButtonGroup, Tooltip, IconButton, Snackbar, Alert, Skeleton, Card, CardContent } from "@mui/material";
 import { useLocation } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -18,9 +18,10 @@ export default function Recommender() {
     const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
     const isMounted = useRef(true);
-    // const [movies, setMovies] = useState([]);
+
     // And the user's answers in the `answers` state
     const [answers, setAnswers] = useState({});
+    const [allMovies, setAllMovies] = useState([]);
     const [filtered, setFiltered] = useState([]);
     const [tooltipOpen, setTooltipOpen] = useState(false);
 
@@ -55,7 +56,7 @@ export default function Recommender() {
             allMovies = allMovies.concat(movies);
         }
         console.log('Fetched all movies:', allMovies.length);
-        return allMovies;
+        setAllMovies(allMovies); // Set the allMovies state
     }, []);
     
     const filterMovies = useCallback((allMovies, answers) => {
@@ -71,15 +72,17 @@ export default function Recommender() {
         };
       }, []);
       
-      const get = useCallback(() => {
-        fetchAllMovies().then(allMovies => {
-          if (isMounted.current) {
+    const get = useCallback(() => {
+        if (isMounted.current) {
             const filteredMovies = filterMovies(allMovies, answers);
             setFiltered(filteredMovies);
             console.log(allMovies.length, filteredMovies.length);
-          }
-        });
-      }, [answers, fetchAllMovies, filterMovies]);
+        }
+    }, [answers, allMovies, filterMovies]);
+
+    useEffect(() => {
+        fetchAllMovies();
+    }, [fetchAllMovies]);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -105,7 +108,7 @@ export default function Recommender() {
     }, [state.formSubmitted, state.selectedOptions]);
 
     useEffect(() => {
-        if (answers) {
+        if (Object.keys(answers).length > 0) { // Only call get() when answers is not empty
             get();
         }
     }, [get, answers]);
@@ -168,24 +171,34 @@ export default function Recommender() {
             </Snackbar>
 
             <Tooltip 
-            title="Fill the form in the Recommendation page and see the recommendations here else browse freely" 
+            title="Please complete the form on the Recommendation page to view personalized movie recommendations here!"
             placement="bottom-start"
             className='myTooltip'
             open={tooltipOpen}
+            onMouseLeave={() => setTooltipOpen(false)}
+            onMouseEnter={() => setTooltipOpen(true)}
             >
-            <IconButton 
-                aria-label="info"
-                onClick={handleTooltipClick}
-            >
-                <InfoIcon />
-            </IconButton>
+                <IconButton 
+                    aria-label="info"
+                    onClick={handleTooltipClick}
+                >
+                    <InfoIcon />
+                </IconButton>
             </Tooltip>
             
             {/* Render the movies here */}
             {filtered.length > 0 ? (
             <MovieCard movie={filtered[currentMovieIndex]} sx={{ justifyContent: 'center', alignItems: 'center' }} />
             ) : (
-            <Skeleton variant="rectangular" width={isScreenSmall ? 300 : 360} height={isScreenSmall ? 490 : 540} sx={{ marginTop: 2 }} />
+                <Card sx={{ width: isScreenSmall ? 300 : 360, marginTop: 2, height: isScreenSmall ? 490 : 540, backgroundColor: '#EADBC8'}}>
+                    <Skeleton variant="rectangular" width="100%" height={isScreenSmall ? 320 : 350} />
+                    <CardContent>
+                        <Skeleton variant="text" width="60%" />
+                        <Skeleton variant="text" width="40%" />
+                        <Skeleton variant="text" width="80%" />
+                        <Skeleton variant="text" width="60%" />
+                    </CardContent>
+                </Card>
             )}
 
             {/* <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: 2, position: 'absolute', bottom: 10 }}></Box> */}
