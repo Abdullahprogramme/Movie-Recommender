@@ -51,7 +51,7 @@ export default function Recommender() {
 
     const fetchAllMovies = useCallback(async () => {
         let allMovies = [];
-        for (let i = 1; i <= 150; i++) {  
+        for (let i = 1; i <= 250; i++) {  
             const movies = await fetchMovies(i);
             allMovies = allMovies.concat(movies);
         }
