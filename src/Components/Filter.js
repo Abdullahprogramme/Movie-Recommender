@@ -3,7 +3,7 @@ const Filter = (movies, answers, genreToId) => {
     
     // const filtered = movies.filter(movie => {
       if (!answers || !answers.genre || !answers.period || !answers.highRating || !answers.criticalAcclaim) {
-        return movies;  // If answers or answers.genre is not defined, return the original movie list
+        return 0;  // If answers or answers.genre is not defined, return the original movie list
       }
   
       let filtered = movies;
