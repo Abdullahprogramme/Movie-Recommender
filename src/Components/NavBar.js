@@ -3,6 +3,7 @@ import SpeedDial from '@mui/material/SpeedDial';
 import SpeedDialIcon from '@mui/material/SpeedDialIcon';
 import SpeedDialAction from '@mui/material/SpeedDialAction';
 import { FaFacebookF, FaGithub, FaLinkedinIn, FaEnvelope } from 'react-icons/fa';
+import { useTheme, useMediaQuery } from "@mui/material";
 
 
 const actions = [
@@ -11,12 +12,16 @@ const actions = [
     { icon: <FaLinkedinIn color='blue'/>, name: 'LinkedIn', href: 'https://www.linkedin.com/in/abdullahtariq78/' },
     { icon: <FaEnvelope color='red'/>, name: 'Email', href: 'mailto:abdtariq78@gmail.com' },
 ];
+    
   
 export default function NavBar() {
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    const theme = useTheme();
+    const isScreenSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
     return (
         <SpeedDial
@@ -26,6 +31,7 @@ export default function NavBar() {
             onClose={handleClose}
             onOpen={handleOpen}
             open={open}
+            direction={isScreenSmall ? 'left' : 'up'}
             className='main-speed-dial'
         >
         {actions.map((action) => (
