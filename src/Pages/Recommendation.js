@@ -1,11 +1,14 @@
 import React from "react";
 import Header from "../Components/Header";
-import { Stepper, Step, StepLabel, Button, Typography, Box, Card, ButtonGroup } from '@mui/material';
+import { Stepper, Step, StepLabel, Button, Typography, Box, Card, ButtonGroup, Tooltip, IconButton } from '@mui/material';
 import { useState } from 'react';
 import { useMediaQuery, useTheme } from '@mui/material';
 import QuestionForm from "../Components/QuestionForm";
 import { makeStyles } from '@mui/styles';
 import { useNavigate } from 'react-router-dom';
+
+import InfoIcon from '@mui/icons-material/Info';
+
 
 const useStyles = makeStyles({
   stepLabel: {
@@ -34,6 +37,11 @@ export default function Recommendation() {
             navigate('/Recommender', { state: { selectedOptions, formSubmitted: true } });
             setSelectedOptions([])
         }
+    };
+
+    const [tooltipOpen, setTooltipOpen] = useState(false);
+    const handleTooltipClick = () => {
+        setTooltipOpen(!tooltipOpen); // Toggle tooltip visibility on click
     };
 
     const handleBack = () => {
@@ -79,7 +87,7 @@ export default function Recommendation() {
             case 2:
               return <QuestionForm key={stepIndex} id="highRating" title="Do you prefer movies with a high TMDB rating?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
             case 3:
-              return <QuestionForm key={stepIndex} id="criticalAcclaim" title="Do you prefer movies that are critically acclaimed?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
+              return <QuestionForm key={stepIndex} id="criticalAcclaim" title="Do you prefer movies that are critically acclaimed (i.e., award-winning or nominated)?" options={['Yes', 'No']} onOptionToggle={handleOptionToggle} />;
             default:
               return 'Unknown stepIndex';
         }
@@ -88,20 +96,22 @@ export default function Recommendation() {
     return (
         <div>
           <Header />
-        
-          {/* <Alert 
-            severity="info" 
-            sx={{ 
-              textAlign: 'center', 
-              margin: 'auto', 
-              width: isScreenSmall ? '300px' : '600px',
-              marginTop: 3,
-              justifyContent: 'center',
-              alignItems: 'center' 
-            }}
-          >
-            Fill out the following questions to get a movie recommendation!
-          </Alert> */}
+
+          <Tooltip 
+            title="Answer all the questions to get the recommendation else it will not be shown."
+            placement="bottom-start"
+            className='myTooltip'
+            open={tooltipOpen}
+            onMouseLeave={() => setTooltipOpen(false)}
+            onMouseEnter={() => setTooltipOpen(true)}
+            >
+                <IconButton 
+                    aria-label="info"
+                    onClick={handleTooltipClick}
+                >
+                    <InfoIcon />
+                </IconButton>
+            </Tooltip>
 
           <Card sx={{ 
             backgroundColor: 'rgba(255, 255, 255, 0.63)', 
