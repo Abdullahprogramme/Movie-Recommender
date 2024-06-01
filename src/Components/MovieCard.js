@@ -106,6 +106,13 @@ const MovieCard = ({ movie }) => {
               Release Date: {movie.release_date}
             </Typography>
           
+            <Typography sx={{ paddingTop: 1 }} variant="body2" color="text.secondary">
+                Cast: {movie.cast.map((castMember, index) => (
+                    <span key={index}>
+                        {castMember.name}{index < movie.cast.length - 1 ? ', ' : ''}
+                    </span>
+                ))}
+            </Typography>
 
           </CardContent>
         )}
