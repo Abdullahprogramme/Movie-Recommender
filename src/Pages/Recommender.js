@@ -53,7 +53,16 @@ export default function Recommender() {
         let allMovies = [];
         for (let i = 1; i <= 250; i++) {  
             const movies = await fetchMovies(i);
-            allMovies = allMovies.concat(movies);
+            
+            // Fetch the cast for each movie
+            const moviesWithCast = await Promise.all(movies.map(async (movie) => {
+                const cast = await fetchMovieCast(movie.id);
+                return { ...movie, cast };
+            }));
+
+            
+
+            allMovies = allMovies.concat(moviesWithCast);
         }
         console.log('Fetched all movies:', allMovies.length);
         setAllMovies(allMovies); // Set the allMovies state
@@ -127,6 +136,16 @@ export default function Recommender() {
         });
 
         return response.data.results;
+    };
+
+    const fetchMovieCast = async (movieId) => {
+        const response = await axios.get(`https://api.themoviedb.org/3/movie/${movieId}/credits`, {
+            params: {
+                api_key: process.env.REACT_APP_TMDB_API_KEY,
+            },
+        });
+    
+        return response.data.cast.slice(0, 5);
     };
 
     const genreToId = (genreName) => {
