@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Header from "../Components/Header";
-import { Button, ButtonGroup, Tooltip, IconButton, Snackbar, Alert, Skeleton, Card, CardContent } from "@mui/material";
+import { Button, ButtonGroup, Typography, Tooltip, IconButton, Snackbar, Alert, Skeleton, Card, CardContent } from "@mui/material";
 import { useLocation } from 'react-router-dom';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -49,21 +49,38 @@ export default function Recommender() {
     const [userName, setUserName] = useState('');
 
 
+    // Helper function to split an array into chunks
+    const chunkArray = (array, chunkSize) => {
+        const chunks = [];
+        for (let i = 0; i < array.length; i += chunkSize) {
+            chunks.push(array.slice(i, i + chunkSize));
+        }
+        return chunks;
+    };
+
+    // Helper function to process an array of promises sequentially
+    const asyncForEach = async (array, callback) => {
+        for (let index = 0; index < array.length; index++) {
+            await callback(array[index], index, array);
+        }
+    };
+
     const fetchAllMovies = useCallback(async () => {
         let allMovies = [];
-        for (let i = 1; i <= 250; i++) {  
-            const movies = await fetchMovies(i);
-            
-            // Fetch the cast for each movie
-            const moviesWithCast = await Promise.all(movies.map(async (movie) => {
-                const cast = await fetchMovieCast(movie.id);
-                return { ...movie, cast };
-            }));
+        const pages = Array.from({length: 250}, (_, i) => i + 1); // Create an array of page numbers
+        const pageChunks = chunkArray(pages, 10); // Split the pages into chunks of 10
 
-            
+        const fetchPage = async (page) => {
+            const movies = await fetchMovies(page);
+            const moviesWithCast = await Promise.all(movies.map(movie => fetchMovieCast(movie.id).then(cast => ({ ...movie, cast }))));
+            return moviesWithCast;
+        };
 
-            allMovies = allMovies.concat(moviesWithCast);
-        }
+        await asyncForEach(pageChunks, async (chunk) => {
+            const allMoviesPages = await Promise.all(chunk.map(fetchPage));
+            allMovies = allMovies.concat(allMoviesPages.flat()); // Flatten the array of arrays into a single array and add it to allMovies
+        });
+
         console.log('Fetched all movies:', allMovies.length);
         setAllMovies(allMovies); // Set the allMovies state
     }, []);
@@ -212,6 +229,7 @@ export default function Recommender() {
                 <Card sx={{ width: isScreenSmall ? 300 : 360, marginTop: 2, height: isScreenSmall ? 490 : 540, backgroundColor: '#EADBC8'}}>
                     <Skeleton variant="rectangular" width="100%" height={isScreenSmall ? 320 : 350} />
                     <CardContent>
+                        <Typography variant="body2" color="text.secondary" component="p"> Waiting for recommendations...</Typography>
                         <Skeleton variant="text" width="60%" />
                         <Skeleton variant="text" width="40%" />
                         <Skeleton variant="text" width="80%" />
