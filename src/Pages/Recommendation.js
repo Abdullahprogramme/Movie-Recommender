@@ -139,12 +139,13 @@ export default function Recommendation() {
 
 
           <Card sx={{ 
-            backgroundColor: 'rgba(255, 255, 255, 0.63)', 
+            // backgroundColor: 'rgba(255, 255, 255, 0.63)', 
+            backgroundColor: '#FFE180',
             borderRadius: '16px', 
             boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
             backdropFilter: 'blur(11.5px)',
             WebkitBackdropFilter: 'blur(11.5px)',
-            border: '1px solid rgba(255, 255, 255, 0.89)',
+            border: '1px solid #FFE180',
             padding: 2,
             margin: 2,
             // marginTop: 5,
